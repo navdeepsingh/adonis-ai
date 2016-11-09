@@ -5,6 +5,7 @@ var Twitter = require('twitter')
 var twitterAPI = require('node-twitter-api')
 var co = require('co');
 
+
 const twitter = new twitterAPI({
           consumerKey: Config.get('auth.twitterAuth.consumerKey'),
           consumerSecret: Config.get('auth.twitterAuth.consumerSecret'),
@@ -33,37 +34,30 @@ class TwitterController {
   }
 
   * connect (request, response) {
-yield request.session.put('requestToken', 'test')
 
-    /*  co(function *(){
-        // yield any promise
-        //var result = yield Promise.resolve(true);
-        const test = yield twitter.getRequestToken
-      }).catch(err){
+
+      twitter.getRequestToken(
+        co(function *(error, requestToken, requestTokenSecret, results){
+            //store token and tokenSecret somewhere, you'll need them later; redirect user
+            console.log(requestToken)
+            //yield request.session.put('requestToken', requestToken)
+            //response.send("https://twitter.com/oauth/authenticate?oauth_token=" + requestToken)
+        }).then(function (val) {
+        console.log(val)
+        }, function (err) {
         console.error(err.stack);
-      };
-*/
-      co(function* () {
-        //return yield Promise.resolve(true);
-        yield request.session.put('requestToken', 'test')
-        twitter.getRequestToken(function(error, requestToken, requestTokenSecret, results, request){
-          if (error) {
-              console.log("Error getting OAuth request token : " + JSON.stringify(error));
-              response.internalServerError(JSON.stringify(error))
-          } else {
-              //store token and tokenSecret somewhere, you'll need them later; redirect user
-            //  yield request.session.put('requestToken', requestToken)
-              //response.send("https://twitter.com/oauth/authenticate?oauth_token=" + requestToken)
-
-              return 'navdeep'
-          }
-        });
+        })
+      );
+/*
+       co(function* () {
+        return yield twitter.getRequestToken()
       }).then(function (val) {
-        console.log('Value');
-        console.log(val);
+        console.log(val)
+        yield request.session.put({'requestToken' : val.requestToken, 'requestTokenSecret' : val.requestTokenSecret})
+        response.send('https://twitter.com/oauth/authenticate?oauth_token='+val.requestToken)
       }, function (err) {
         console.error(err.stack);
-      });
+      });*/
 
 
 
@@ -75,7 +69,7 @@ yield request.session.put('requestToken', 'test')
       const requestTokenSecret =  yield request.session.get('requestTokenSecret')
       const oauth_verifier = request.param('oauth_verifier')
 
-      console.log(requestToken)
+      console.log('requestToken : ' + requestToken)
 
       twitter.getAccessToken(requestToken, requestTokenSecret, oauth_verifier, function(error, accessToken, accessTokenSecret, results) {
           if (error) {
