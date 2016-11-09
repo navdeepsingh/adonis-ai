@@ -3,7 +3,8 @@
 const Config = use('Config')
 var Twitter = require('twitter')
 var twitterAPI = require('node-twitter-api')
-var co = require('co');
+var co = require('co')
+const promisify = require("es6-promisify")
 
 
 const twitter = new twitterAPI({
@@ -35,26 +36,40 @@ class TwitterController {
 
   * connect (request, response) {
 
+    const getToken = promisify(twitter.getRequestToken.bind(twitter), {multiArgs: true})
 
-      twitter.getRequestToken(
+    getToken().then(function (result) {
+        yield request.session.put({'requestToken' : result[0], 'requestTokenSecret' : result[1]})
+    });
+
+      /*let x = yield [1,2,3];
+      console.log(x)*/
+     /* twitter.getRequestToken(
         co(function *(error, requestToken, requestTokenSecret, results){
+
+          //console.log(results);
+
             //store token and tokenSecret somewhere, you'll need them later; redirect user
-            console.log(requestToken)
             //yield request.session.put('requestToken', requestToken)
             //response.send("https://twitter.com/oauth/authenticate?oauth_token=" + requestToken)
         }).then(function (val) {
-        console.log(val)
+          console.log(2);
+          console.log(val)
         }, function (err) {
-        console.error(err.stack);
+          console.log(3);
+          console.error(err.stack);
         })
-      );
-/*
-       co(function* () {
-        return yield twitter.getRequestToken()
-      }).then(function (val) {
-        console.log(val)
-        yield request.session.put({'requestToken' : val.requestToken, 'requestTokenSecret' : val.requestTokenSecret})
-        response.send('https://twitter.com/oauth/authenticate?oauth_token='+val.requestToken)
+      );*/
+
+      /*co(function* () {
+
+        //yield request.session.put({'requestToken' : requestToken, 'requestTokenSecret' : requestTokenSecret})
+        twitter.getRequestToken(function (error, requestToken, requestTokenSecret, results){
+          yield request.session.put({'requestToken' : 1})
+        })
+      }).then(function (error, requestToken, requestTokenSecret, results) {
+        console.log(results)
+        //response.send('https://twitter.com/oauth/authenticate?oauth_token='+val.requestToken)
       }, function (err) {
         console.error(err.stack);
       });*/
