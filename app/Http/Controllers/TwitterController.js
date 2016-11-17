@@ -1,10 +1,9 @@
-'use strict'
+  'use strict'
 
 const Config = use('Config')
-var Twitter = require('twitter')
 var twitterAPI = require('node-twitter-api')
-var co = require('co')
 const promisify = require("es6-promisify")
+const User = use('App/Model/User')
 
 
 const twitter = new twitterAPI({
@@ -15,86 +14,51 @@ const twitter = new twitterAPI({
 
 class TwitterController {
 
-  * index (request, response) {
-      var client = new Twitter({
-        consumer_key: Config.get('auth.twitterAuth.consumerKey'),
-        consumer_secret: Config.get('auth.twitterAuth.consumerSecret'),
-        access_token_key: Config.get('auth.twitterAuth.accessTokenKey'),
-        access_token_secret: Config.get('auth.twitterAuth.accessTokenSecret')
-      });
-
-      var tweets;
-
-      var params = {screen_name: 'nodejs'};
-      client.get('statuses/user_timeline', params, function(error, tweets, res) {
-        if (!error) {
-          tweets = tweets
-        }
-        response.json(tweets)
-      });
-  }
-
   * connect (request, response) {
 
-    const getToken = promisify(twitter.getRequestToken.bind(twitter), {multiArgs: true})
+    const getToken = promisify( twitter.getRequestToken.bind( twitter ), {multiArgs: true} )
+    const result = yield getToken()
+    response.send(`/api/handle/twitter?c1=${result[0]}&c2=${result[1]}`)
 
-    getToken().then(function (result) {
-        yield request.session.put({'requestToken' : result[0], 'requestTokenSecret' : result[1]})
-    });
+  }
 
-      /*let x = yield [1,2,3];
-      console.log(x)*/
-     /* twitter.getRequestToken(
-        co(function *(error, requestToken, requestTokenSecret, results){
+  * handle (request, response) {
 
-          //console.log(results);
+      const data = request.get()
 
-            //store token and tokenSecret somewhere, you'll need them later; redirect user
-            //yield request.session.put('requestToken', requestToken)
-            //response.send("https://twitter.com/oauth/authenticate?oauth_token=" + requestToken)
-        }).then(function (val) {
-          console.log(2);
-          console.log(val)
-        }, function (err) {
-          console.log(3);
-          console.error(err.stack);
-        })
-      );*/
+      yield request.session.put('requestToken', data.c1)
+      yield request.session.put('requestTokenSecret', data.c2)
 
-      /*co(function* () {
-
-        //yield request.session.put({'requestToken' : requestToken, 'requestTokenSecret' : requestTokenSecret})
-        twitter.getRequestToken(function (error, requestToken, requestTokenSecret, results){
-          yield request.session.put({'requestToken' : 1})
-        })
-      }).then(function (error, requestToken, requestTokenSecret, results) {
-        console.log(results)
-        //response.send('https://twitter.com/oauth/authenticate?oauth_token='+val.requestToken)
-      }, function (err) {
-        console.error(err.stack);
-      });*/
-
-
+      response.redirect(`https://twitter.com/oauth/authenticate?oauth_token=${data.c1}`)
 
   }
 
   * callback (request, response) {
 
+      const data = request.get()
       const requestToken =  yield request.session.get('requestToken')
       const requestTokenSecret =  yield request.session.get('requestTokenSecret')
-      const oauth_verifier = request.param('oauth_verifier')
+      const oauth_verifier = data.oauth_verifier
 
-      console.log('requestToken : ' + requestToken)
+      const getAccessToken = promisify( twitter.getAccessToken.bind( twitter ), {multiArgs: true} )
+      const result = yield getAccessToken(requestToken, requestTokenSecret, oauth_verifier)
 
-      twitter.getAccessToken(requestToken, requestTokenSecret, oauth_verifier, function(error, accessToken, accessTokenSecret, results) {
-          if (error) {
-              console.log(error);
-          } else {
-            console.log(results)
-              //store accessToken and accessTokenSecret somewhere (associated to the user)
-              //Step 4: Verify Credentials belongs here
-          }
-      });
+
+      let user = yield User.findBy('twitter_user_id', result[2].user_id)
+
+      if (user == null) {
+        user = new User()
+      }
+
+      user.twitter_user_id = result[2].user_id
+      user.twitter_screen_name = result[2].screen_name
+      user.twitter_access_token = result[0]
+      user.twitter_access_token_secret = result[1]
+
+      yield user.save()
+      console.log('Saved')
+//      response.redirect(`./twitter/feed/${user.id}`)
+      response.route('twitterFeed', {id: user.id})
   }
 
 }

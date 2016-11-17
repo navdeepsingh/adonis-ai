@@ -18,9 +18,13 @@
 const Route = use('Route')
 
 Route.get('/', 'PageController.index')
+Route
+  .get('/twitter/feed/:id', 'PageController.twitterFeed')
+  .as('twitterFeed')
 
 Route.group('socialAuth', function () {
   Route.get('/auth/twitter', 'TwitterController.index')
   Route.get('/connect/twitter', 'TwitterController.connect')
+  Route.get('/handle/twitter', 'TwitterController.handle')
   Route.get('/callback/twitter', 'TwitterController.callback')
 }).prefix('/api')
