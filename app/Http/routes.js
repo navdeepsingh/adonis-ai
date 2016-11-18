@@ -27,4 +27,5 @@ Route.group('socialAuth', function () {
   Route.get('/connect/twitter', 'TwitterController.connect')
   Route.get('/handle/twitter', 'TwitterController.handle')
   Route.get('/callback/twitter', 'TwitterController.callback')
+  Route.get('/feed/twitter', 'TwitterController.pullFeed')
 }).prefix('/api')

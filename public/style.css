@@ -101,3 +101,7 @@ body {
 .__footer li a:hover {
   opacity: 1;
 }
+
+.panel {
+  margin-bottom: 0px;
+}

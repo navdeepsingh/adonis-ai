@@ -16,7 +16,7 @@
               <p v-if="connectedTwitter">Connected to Twitter  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
               <p v-if="connectedFacebook">Connected to Facebook  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
               {% raw %}
-              {{ status | json }}
+              {{ statusLinking | json }}
               {% endraw %}
               <hr>
               {{ twitterFeed | json }}
@@ -28,16 +28,13 @@
             <h3 class="panel-title">Step 2: Pull feed from twitter and FB account</h3>
           </div>
           <div class="panel-body">
-              <a href="#" class="" v-on:click="linkTwitter"><img src="/assets/Twitter_Logo_Blue.svg" width="50" height="50" alt="Twitter"></a>
-              <a href="#" class="" v-on:click="linkFacebook"><img src="/assets/F_icon.svg" width="30" height="30" alt="Facebook"></a>
+              <a href="#" class="" v-on:click="pullFeedTwitter">Pull from Twitter Account</a><br>
+              <a href="#" class="" v-on:click="pullFeedFacebook">Pull from Facebook Account</a>
               <hr>
-              <p v-if="connectedTwitter">Connected to Twitter  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
-              <p v-if="connectedFacebook">Connected to Facebook  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
               {% raw %}
-              {{ status | json }}
+              {{ statusPulling | json }}
               {% endraw %}
-              <hr>
-              {{ twitterFeed | json }}
+
           </div>
         </div>
 

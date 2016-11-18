@@ -28,10 +28,8 @@ class PageController {
       const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
       const twitterUser = yield User.findBy( 'twitter_access_token', twitterAccessToken )
 
-      if (twitterUser) {
+      if (twitterUser !== null) {
         response.send({connectedTwitter : true, connectedFacebook : false})
-      } else {
-        response.ok()
       }
 
   }
