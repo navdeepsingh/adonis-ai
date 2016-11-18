@@ -5,7 +5,6 @@ var twitterAPI = require('node-twitter-api')
 const promisify = require("es6-promisify")
 const User = use('App/Model/User')
 
-
 const twitter = new twitterAPI({
           consumerKey: Config.get('auth.twitterAuth.consumerKey'),
           consumerSecret: Config.get('auth.twitterAuth.consumerSecret'),
@@ -56,8 +55,8 @@ class TwitterController {
       user.twitter_access_token_secret = result[1]
 
       yield user.save()
+      yield request.session.put('twitterAccessToken', user.twitter_access_token)
       console.log('Saved')
-//      response.redirect(`./twitter/feed/${user.id}`)
       response.route('twitterFeed', {id: user.id})
   }
 

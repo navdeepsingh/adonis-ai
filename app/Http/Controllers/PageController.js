@@ -3,21 +3,37 @@
 const alchemyapi = use('Alchemyapi')
 const User = use('App/Model/User')
 
+
 class PageController {
   * index (request, response) {
 
-      yield response.sendView('welcome')
+      const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
+      const user = yield User.findBy( 'twitter_access_token', twitterAccessToken )
+
+      yield response.sendView( 'welcome', {twitterFeed : user} )
+
   }
 
   * twitterFeed (request, response) {
 
       const userId = request.param('id')
-      console.log(userId)
       const user = yield User.find(userId)
 
-      console.log(user.toJSON())
+      yield response.sendView( 'welcome', {twitterFeed : user.toJSON()} )
 
-      yield response.sendView('welcome', { twitterFeed : user.toJSON() })
+  }
+
+  * fetchStatus (request, response) {
+
+      const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
+      const twitterUser = yield User.findBy( 'twitter_access_token', twitterAccessToken )
+
+      if (twitterUser) {
+        response.send({connectedTwitter : true, connectedFacebook : false})
+      } else {
+        response.ok()
+      }
+
   }
 }
 
