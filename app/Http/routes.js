@@ -28,4 +28,8 @@ Route.group('socialAuth', function () {
   Route.get('/handle/twitter', 'TwitterController.handle')
   Route.get('/callback/twitter', 'TwitterController.callback')
   Route.get('/feed/twitter', 'TwitterController.pullFeed')
+
+  Route.post('/store/facebook', 'FacebookController.store')
+  Route.get('/callback/facebook', 'FacebookController.callback')
+
 }).prefix('/api')

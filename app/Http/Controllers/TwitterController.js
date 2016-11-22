@@ -3,7 +3,7 @@
 const Config = use('Config')
 var twitterAPI = require('node-twitter-api')
 const promisify = require("es6-promisify")
-const User = use('App/Model/User')
+const UserTwitter = use('App/Model/UserTwitter')
 
 const twitter = new twitterAPI({
           consumerKey: Config.get('auth.twitterAuth.consumerKey'),
@@ -43,19 +43,19 @@ class TwitterController {
       const result = yield getAccessToken(requestToken, requestTokenSecret, oauth_verifier)
 
 
-      let user = yield User.findBy('twitter_user_id', result[2].user_id)
+      let user = yield UserTwitter.findBy('user_id', result[2].user_id)
 
       if (user == null) {
-        user = new User()
+        user = new UserTwitter()
       }
 
-      user.twitter_user_id = result[2].user_id
-      user.twitter_screen_name = result[2].screen_name
-      user.twitter_access_token = result[0]
-      user.twitter_access_token_secret = result[1]
+      user.user_id = result[2].user_id
+      user.screen_name = result[2].screen_name
+      user.access_token = result[0]
+      user.access_token_secret = result[1]
 
       yield user.save()
-      yield request.session.put('twitterAccessToken', user.twitter_access_token)
+      yield request.session.put('twitterAccessToken', user.access_token)
 
       response.redirect('/')
   }
@@ -63,10 +63,10 @@ class TwitterController {
   * pullFeed (request, response) {
 
       const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
-      const user = yield User.findBy( 'twitter_access_token', twitterAccessToken )
+      const user = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
 
       const getTimeline = promisify( twitter.getTimeline.bind( twitter ), {multiArgs: true} )
-      const result = yield getTimeline("home_timeline", '', user.twitter_access_token, user.twitter_access_token_secret)
+      const result = yield getTimeline("home_timeline", '', user.access_token, user.access_token_secret)
 
       response.send(result[0])
 

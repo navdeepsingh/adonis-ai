@@ -90,7 +90,7 @@ module.exports = {
   },
 
   /*
-  * API Passport
+  * API Twitter
   */
   twitterAuth : {
     consumerKey: Env.get('TWITTER_CONSUMER_KEY'),
@@ -98,6 +98,17 @@ module.exports = {
     callbackURL: Env.get('TWITTER_CALLBACK_URL'),
     accessTokenKey: Env.get('TWITTER_ACCESS_TOKEN_KEY'),
     accessTokenSecret: Env.get('TWITTER_ACCESS_TOKEN_SECRET')
+  },
+
+  /*
+  * API Facebook
+  */
+  facebookAuth : {
+    appId: Env.get('FACEBOOK_APP_ID'),
+    appSecret: Env.get('FACEBOOK_APP_SECRET'),
+    callbackURL: Env.get('FACEBOOK_CALLBACK_URL')
   }
+
+
 
 }
