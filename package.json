@@ -19,7 +19,7 @@
     "adonis-framework": "^3.0.3",
     "adonis-lucid": "^3.0.9",
     "adonis-middleware": "^1.0.8",
-    "alchemy-api-nav": "^1.0.0",
+    "alchemy-api-nav": "^2.0.0",
     "bootstrap": "^3.3.7",
     "es6-promisify": "^5.0.0",
     "fb-promise-wrapper": "^1.0.0",
