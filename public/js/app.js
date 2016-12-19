@@ -94,7 +94,7 @@ new Vue({
           var uid = response.authResponse.userID;
           var accessToken = response.authResponse.accessToken;
 
-          FB.api('/me', 'get', {access_token : accessToken}, function(response) {
+          FB.api('/me/feed', 'get', {access_token : accessToken}, function(response) {
             if (!response || response.error) {
               console.log(response.error)
             } else {
@@ -117,7 +117,7 @@ new Vue({
           this.statusLinking = ''
 	  if ( this.connectedTwitter == true && this.connectedFacebook == true ) {
 		this.showStep2 = true
-	  }	  
+	  }
         })
         .catch((error) => {
           console.log(error)
