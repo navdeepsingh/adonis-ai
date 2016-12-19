@@ -79,7 +79,7 @@ new Vue({
             } else {
               that.statusLinking = 'User cancelled login or did not fully authorize.'
             }
-          });
+          }, { scope: 'user_posts'});
 
         }
       });
@@ -94,7 +94,7 @@ new Vue({
           var uid = response.authResponse.userID;
           var accessToken = response.authResponse.accessToken;
 
-          FB.api('/me/feed', 'get', {access_token : accessToken}, function(response) {
+          FB.api('/me/feed', {access_token : accessToken}, function(response) {
             if (!response || response.error) {
               console.log(response.error)
             } else {
