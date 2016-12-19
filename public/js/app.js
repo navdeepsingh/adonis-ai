@@ -5,7 +5,8 @@ new Vue({
     statusLinking : 'Yet to Link',
     statusPulling : 'Yet to Pull',
     connectedTwitter : false,
-    connectedFacebook : false
+    connectedFacebook : false,
+    showStep2 : false
   },
 
   methods: {
@@ -114,6 +115,9 @@ new Vue({
           this.connectedTwitter = response.body.connectedTwitter
           this.connectedFacebook = response.body.connectedFacebook
           this.statusLinking = ''
+	  if ( this.connectedTwitter == true && this.connectedFacebook == true ) {
+		this.showStep2 = true
+	  }	  
         })
         .catch((error) => {
           console.log(error)
