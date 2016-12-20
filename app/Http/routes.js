@@ -31,5 +31,5 @@ Route.group('socialAuth', function () {
 
   Route.post('/store/facebook', 'FacebookController.store')
   Route.get('/callback/facebook', 'FacebookController.callback')
-
+  Route.post('/feed/facebook', 'FacebookController.saveFeed')
 }).prefix('/api')

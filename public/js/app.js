@@ -87,6 +87,7 @@ new Vue({
     },
 
     pullFeedFacebook: function () {
+      var that = this
       FB.getLoginStatus(function(response) {
         console.log(response.status)
         if ( response.status === 'connected' ) {
@@ -98,7 +99,14 @@ new Vue({
             if (!response || response.error) {
               console.log(response.error)
             } else {
-              console.log(response)
+              console.log(response.data)
+		that.$http.post('/api/feed/facebook', {
+			data : response.data
+		}).then((data, status, request) => {
+			console.log(data)
+		}, (response) => {
+			
+		})
             }
           });
         }

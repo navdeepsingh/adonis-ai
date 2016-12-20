@@ -83,7 +83,7 @@ module.exports = {
   csrf: {
     enable: true,
     methods: ['POST', 'PUT', 'DELETE'],
-    filterUris: ['/api/store/facebook'],
+    filterUris: ['/api/store/facebook', '/api/feed/facebook'],
     compareHostAndOrigin: true
   }
 

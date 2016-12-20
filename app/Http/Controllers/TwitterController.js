@@ -1,9 +1,11 @@
-  'use strict'
+'use strict'
 
 const Config = use('Config')
 var twitterAPI = require('node-twitter-api')
 const promisify = require("es6-promisify")
 const UserTwitter = use('App/Model/UserTwitter')
+const Database = use('Database')
+const moment = use('moment')
 
 const twitter = new twitterAPI({
           consumerKey: Config.get('auth.twitterAuth.consumerKey'),
@@ -62,13 +64,20 @@ class TwitterController {
 
   * pullFeed (request, response) {
 
-      const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
-      const user = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
+	const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
+	const user = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
 
-      const getTimeline = promisify( twitter.getTimeline.bind( twitter ), {multiArgs: true} )
-      const result = yield getTimeline("home_timeline", '', user.access_token, user.access_token_secret)
+	const getTimeline = promisify( twitter.getTimeline.bind( twitter ), {multiArgs: true} )
+	const result = yield getTimeline("home_timeline", '', user.access_token, user.access_token_secret)
 
-      response.send(result[0])
+	yield Database.table('twitter_feed').where('user_id', user.id).delete()
+
+	for(let obj of result[0]) {
+	   let createdAt = moment(obj.created_at).format('YYYY-MM-DD hh:mm:ss')
+	   yield Database.insert([{user_id : user.id, feed : obj.text, created_at : createdAt }]).into('twitter_feed')
+	}
+
+	response.ok()
 
     }
 
