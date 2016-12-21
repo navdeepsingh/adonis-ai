@@ -55,7 +55,8 @@ new Vue({
               id : uid,
               name : response.name
             }).then((data, status, request) => {
-              console.log(data)
+//              console.log(data)
+		that.fetchStatus()              
             }, (response) => {
               this.statusPulling = 'Error'
             });
