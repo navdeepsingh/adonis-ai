@@ -4,9 +4,14 @@ new Vue({
   data: {
     statusLinking : 'Yet to Link',
     statusPulling : 'Yet to Pull',
+    statusAnalyzing : 'Yet to Start',
     connectedTwitter : false,
     connectedFacebook : false,
-    showStep2 : false
+    pulledTwitter : false,
+    pulledFacebook : false,
+    completeAnalyzing : false,
+    showStep2 : false,
+    showStep3 : false
   },
 
   methods: {
@@ -113,8 +118,18 @@ new Vue({
         }
       })
 
+    },
 
-
+    startAnalyzing: function() {
+        console.log('Start API here')
+        this.statusAnalyzing = 'Analyzing..'
+        this.$http.get('/analyze').then((response) => {
+            console.log(response.body)            
+            this.statusAnalyzing = response.body
+        }).catch((error) => {
+            this.statusAnalyzing = `Error : ${error}`
+            console.log(error)
+        });       
     },
 
     fetchStatus: function () {
@@ -123,10 +138,16 @@ new Vue({
           console.log(response.body)
           this.connectedTwitter = response.body.connectedTwitter
           this.connectedFacebook = response.body.connectedFacebook
+          this.pulledTwitter = response.body.pulledTwitter
+          this.pulledFacebook = response.body.pulledFacebook
           this.statusLinking = ''
-	  if ( this.connectedTwitter == true && this.connectedFacebook == true ) {
-		this.showStep2 = true
-	  }
+          this.statusPulling = ''
+    	  if ( this.connectedTwitter == true && this.connectedFacebook == true ) {
+        	this.showStep2 = true
+    	  }
+          if ( this.pulledTwitter == true && this.pulledFacebook == true ) {
+            this.showStep3 = true
+          }
         })
         .catch((error) => {
           console.log(error)

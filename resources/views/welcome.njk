@@ -32,12 +32,30 @@
               <a href="#" class="" v-on:click="pullFeedTwitter">Pull from Twitter Account</a><br>
               <a href="#" class="" v-on:click="pullFeedFacebook">Pull from Facebook Account</a>
               <hr>
+              <p v-if="pulledTwitter">Pulled from Twitter  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
+              <p v-if="pulledFacebook">Pulled from Facebook  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
               {% raw %}
               {{ statusPulling | json }}
               {% endraw %}
 
           </div>
         </div>
+
+         <div class="panel panel-info" id="step3-wrapper" v-show="showStep3">
+          <div class="panel-heading">
+            <h3 class="panel-title">Step 3: Analyzing Sentences</h3>
+          </div>
+          <div class="panel-body">
+              <a href="#" class="" v-on:click="startAnalyzing">Initiate Analyzing</a>
+              <hr>
+              <p v-if="completeAnalyzing">Analyzing Complete <a href="">See results</a> <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></p>
+              {% raw %}
+              {{ statusAnalyzing | json }}
+              {% endraw %}
+
+          </div>
+        </div>
+
 
       </div>
     </div>

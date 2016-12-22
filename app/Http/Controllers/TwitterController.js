@@ -25,41 +25,41 @@ class TwitterController {
 
   * handle (request, response) {
 
-      const data = request.get()
+    const data = request.get()
 
-      yield request.session.put('requestToken', data.c1)
-      yield request.session.put('requestTokenSecret', data.c2)
+    yield request.session.put('requestToken', data.c1)
+    yield request.session.put('requestTokenSecret', data.c2)
 
-      response.redirect(`https://twitter.com/oauth/authenticate?oauth_token=${data.c1}`)
+    response.redirect(`https://twitter.com/oauth/authenticate?oauth_token=${data.c1}`)
 
   }
 
   * callback (request, response) {
 
-      const data = request.get()
-      const requestToken =  yield request.session.get('requestToken')
-      const requestTokenSecret =  yield request.session.get('requestTokenSecret')
-      const oauth_verifier = data.oauth_verifier
+    const data = request.get()
+    const requestToken =  yield request.session.get('requestToken')
+    const requestTokenSecret =  yield request.session.get('requestTokenSecret')
+    const oauth_verifier = data.oauth_verifier
 
-      const getAccessToken = promisify( twitter.getAccessToken.bind( twitter ), {multiArgs: true} )
-      const result = yield getAccessToken(requestToken, requestTokenSecret, oauth_verifier)
+    const getAccessToken = promisify( twitter.getAccessToken.bind( twitter ), {multiArgs: true} )
+    const result = yield getAccessToken(requestToken, requestTokenSecret, oauth_verifier)
 
 
-      let user = yield UserTwitter.findBy('user_id', result[2].user_id)
+    let user = yield UserTwitter.findBy('user_id', result[2].user_id)
 
-      if (user == null) {
-        user = new UserTwitter()
-      }
+    if (user == null) {
+      user = new UserTwitter()
+    }
 
-      user.user_id = result[2].user_id
-      user.screen_name = result[2].screen_name
-      user.access_token = result[0]
-      user.access_token_secret = result[1]
+    user.user_id = result[2].user_id
+    user.screen_name = result[2].screen_name
+    user.access_token = result[0]
+    user.access_token_secret = result[1]
 
-      yield user.save()
-      yield request.session.put('twitterAccessToken', user.access_token)
+    yield user.save()
+    yield request.session.put('twitterAccessToken', user.access_token)
 
-      response.redirect('/')
+    response.redirect('/')
   }
 
   * pullFeed (request, response) {
@@ -77,7 +77,8 @@ class TwitterController {
 	   yield Database.insert([{user_id : user.id, feed : obj.text, created_at : createdAt }]).into('twitter_feed')
 	}
 
-	response.ok()
+    yield request.session.put('twitterPulled', true)
+    response.ok()
 
     }
 
