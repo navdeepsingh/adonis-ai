@@ -33,7 +33,7 @@ new Vue({
         // success callback
         console.log(response.body)
         this.statusPulling = 'Pulled'
-        //  this.$http.get('/')
+        this.fetchStatus()
       }, (response) => {
         // error callback
         this.statusPulling = 'Error'
@@ -106,15 +106,16 @@ new Vue({
               console.log(response.error)
             } else {
               console.log(response.data)
-		that.$http.post('/api/feed/facebook', {
-			data : response.data
-		}).then((data, status, request) => {
-			console.log(data)
-		}, (response) => {
+              that.$http.post('/api/feed/facebook', {
+  			    data : response.data
+  		      }).then((data, status, request) => {
+			    that.fetchStatus()
+		      }, (response) => {
 			
-		})
+		      })
             }
           });
+
         }
       })
 

@@ -58,14 +58,16 @@ class TwitterController {
 
     yield user.save()
     yield request.session.put('twitterAccessToken', user.access_token)
+    console.log(user.access_token)
 
     response.redirect('/')
   }
 
   * pullFeed (request, response) {
 
-	const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
+	const twitterAccessToken = yield request.session.get('twitterAccessToken')
 	const user = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
+    console.log(user.id)
 
 	const getTimeline = promisify( twitter.getTimeline.bind( twitter ), {multiArgs: true} )
 	const result = yield getTimeline("home_timeline", '', user.access_token, user.access_token_secret)

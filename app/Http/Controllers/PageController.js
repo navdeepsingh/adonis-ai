@@ -4,6 +4,8 @@ const alchemyapi = use('Alchemyapi')
 const UserTwitter = use('App/Model/UserTwitter')
 const UserFacebook = use('App/Model/UserFacebook')
 const Database = use('Database')
+const promisify = require("es6-promisify")
+
 
 
 class PageController {
@@ -15,19 +17,36 @@ class PageController {
     yield response.sendView( 'welcome', {twitterFeed : user} )
   }
 
-  * analyze (request, response) {
-    
-      
-        
-    const titterAccessToken = yield request.session.get( 'twitterAccessToken' )
+  * analyze (request, response) { 
+              
+    const twitterAccessToken = yield request.session.get('twitterAccessToken')
     const twitterUser = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
-    // var myText = "TIL Welcome to the Alfresco App Dev Framework 1.0.0 LA release https://t.co/2Ce7G9j7Wl via @FrkCorti #projects https://t.co/W35Gj2cAnu";
     
+    
+    const twitterFeed =  yield twitterUser.feed().fetch()
+    const twitterFeedJson = twitterFeed.toJSON()
+   
+    let index = 0
+    while( index < twitterFeedJson.length ) {
+ 
+      let feed = twitterFeedJson[index].feed    
 
-    alchemyapi.sentiment("text", myText, {}, function(res) {
-        //console.log("Sentiment: " + JSON.stringify(res["docSentiment"]));
-     })
-    return response.send('ok')    
+      const sentiment = promisify( alchemyapi.sentiment.bind( alchemyapi ))
+      try {
+          yield sentiment("text", feed, {})      
+      } 
+      catch(res) {
+        console.log(res.docSentiment)
+
+        yield Database.table('twitter_feed')
+            .where('id', twitterFeedJson[index].id)
+            .update('analysis', JSON.stringify(res.docSentiment))
+            
+      }
+
+      index++
+    }
+   return response.send('ok')    
 
   }
 
