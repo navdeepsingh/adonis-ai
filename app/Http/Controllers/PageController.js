@@ -5,6 +5,7 @@ const UserTwitter = use('App/Model/UserTwitter')
 const UserFacebook = use('App/Model/UserFacebook')
 const Database = use('Database')
 const promisify = require("es6-promisify")
+const _ = require("lodash")
 
 
 
@@ -21,10 +22,17 @@ class PageController {
               
     const twitterAccessToken = yield request.session.get('twitterAccessToken')
     const twitterUser = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
-    
-    
+        
+    const facebookAccessToken = yield request.session.get('facebookAccessToken')
+    const facebookUser = yield UserFacebook.findBy( 'access_token', facebookAccessToken )
+
     const twitterFeed =  yield twitterUser.feed().fetch()
     const twitterFeedJson = twitterFeed.toJSON()
+    const twitterFeedValue = twitterFeed.value()
+
+    const facebookFeed = yield facebookUser.feed().fetch()
+    const facebookFeedJson = facebookFeed.toJSON()
+    
    
     let index = 0
     while( index < twitterFeedJson.length ) {
@@ -36,11 +44,22 @@ class PageController {
           yield sentiment("text", feed, {})      
       } 
       catch(res) {
-        console.log(res.docSentiment)
+//        console.log(res.docSentiment)
+//        console.log(twitterFeed.value())
+//        console.log(_.size(twitterFeed.value()))
+        const feedValue = twitterFeedValue[index].attributes
 
-        yield Database.table('twitter_feed')
-            .where('id', twitterFeedJson[index].id)
-            .update('analysis', JSON.stringify(res.docSentiment))
+        console.log(feedValue)
+
+//        feedValue.fill({analysis : JSON.stringify(res.docSentiment)})
+//        yield feedValue.save()
+
+//      yield twitterUser.feed().save(twitterFeedJson[index])
+         
+
+/*      yield Database.table('twitter_feed')
+          .where('id', twitterFeedJson[index].id)
+          .update('analysis', JSON.stringify(res.docSentiment))*/
             
       }
 

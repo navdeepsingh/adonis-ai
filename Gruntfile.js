@@ -13,9 +13,10 @@ module.exports = function(grunt) {
                 './jquery/dist/js/jquery.min.js',
                 './bootstrap/dist/js/bootstrap.min.js',
                 './vue/dist/vue.min.js',
-                './axios/dist/axios.min.js',
-                './axios/dist/axios.min.map',
                 './vue-resource/dist/vue-resource.min.js',
+                './vue-charts/dist/vue-charts.min.js',
+                './vue-charts/dist/vue-charts.js'
+  
             ]
         }
     }

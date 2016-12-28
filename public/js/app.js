@@ -1,3 +1,10 @@
+// register modal component
+Vue.component('modal', {
+   template: '#modal-template'
+})
+
+//Vue.use(VueCharts);
+
 new Vue({
   el: '#app',
 
@@ -11,7 +18,36 @@ new Vue({
     pulledFacebook : false,
     completeAnalyzing : false,
     showStep2 : false,
-    showStep3 : false
+    showStep3 : false,
+    showResultsLink : true,
+    showModal: false,
+    function() {
+        return {
+            columns : [{
+                'type' : 'string',
+                'label': 'Year'
+            }],
+            rows : [
+                ['2004', 1000, 400],
+                ['2005', 1170, 460]
+            ],
+            options: {
+                title: 'Company Performance',
+                hAxis: {
+                    title: 'Year',
+                    minValue: '2004',
+                    maxValue: '2007'
+                },
+                vAxis: {
+                    title: '',
+                    minValue: 300,
+                    maxValue: 1200
+                },
+                // not setting fixed width
+                height: 500
+            }
+        }
+    }
   },
 
   methods: {
@@ -125,12 +161,22 @@ new Vue({
         console.log('Start API here')
         this.statusAnalyzing = 'Analyzing..'
         this.$http.get('/analyze').then((response) => {
-            console.log(response.body)            
-            this.statusAnalyzing = response.body
+            const result = response.body            
+            console.log(result)
+            if (result == 'ok') {
+                this.showResultsLink = true
+                this.statusAnalyzing = result
+            }          
         }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)
         });       
+    },
+
+    showResults: function() {
+        console.log('Modal will be displayed')
+        this.showModal = true
+
     },
 
     fetchStatus: function () {
