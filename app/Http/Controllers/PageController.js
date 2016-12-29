@@ -8,7 +8,6 @@ const promisify = require("es6-promisify")
 const _ = require("lodash")
 
 
-
 class PageController {
   * index (request, response) {
 

@@ -21,6 +21,7 @@
     "adonis-middleware": "^1.0.8",
     "alchemy-api-nav": "^2.0.0",
     "bootstrap": "^3.3.7",
+    "chart.js": "^2.4.0",
     "es6-promisify": "^5.0.0",
     "fb-promise-wrapper": "^1.0.0",
     "jquery": "^3.1.1",

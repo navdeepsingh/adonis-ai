@@ -3,8 +3,6 @@ Vue.component('modal', {
    template: '#modal-template'
 })
 
-//Vue.use(VueCharts);
-
 new Vue({
   el: '#app',
 

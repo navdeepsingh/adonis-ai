@@ -15,8 +15,8 @@ module.exports = function(grunt) {
                 './vue/dist/vue.min.js',
                 './vue-resource/dist/vue-resource.min.js',
                 './vue-charts/dist/vue-charts.min.js',
-                './vue-charts/dist/vue-charts.js'
-  
+                './vue-charts/dist/vue-charts.js',
+                './chart.js/dist/Chart.js'  
             ]
         }
     }
