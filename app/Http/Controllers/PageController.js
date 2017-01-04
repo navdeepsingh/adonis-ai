@@ -6,6 +6,7 @@ const UserFacebook = use('App/Model/UserFacebook')
 const Database = use('Database')
 const promisify = require("es6-promisify")
 const _ = require("lodash")
+const Promise = require("bluebird");
 
 
 class PageController {
@@ -25,16 +26,25 @@ class PageController {
     const facebookAccessToken = yield request.session.get('facebookAccessToken')
     const facebookUser = yield UserFacebook.findBy( 'access_token', facebookAccessToken )
 
-    const twitterFeed =  yield twitterUser.feed().fetch()
-    const twitterFeedJson = twitterFeed.toJSON()
-    const twitterFeedValue = twitterFeed.value()
+    const twitterFeeds =  yield twitterUser.feeds().fetch()
+    const facebookFeeds = yield facebookUser.feeds().fetch()
 
-    const facebookFeed = yield facebookUser.feed().fetch()
-    const facebookFeedJson = facebookFeed.toJSON()
-    
+    const sentiment = promisify( alchemyapi.sentiment.bind( alchemyapi ))   
+
+//    const socialFeeds = "{'twitter' :  {'table' : 'twitter_feed', 'data' : twitterFeeds}, 'facebook': {'table' : 'facebook_feed','data' : facebookFeeds}}"
+
+
+    let socialFeeds = '{"twitter": [{"table": "twitter_feed","data": "twitterFeeds"}]}'
+   socialFeeds = JSON.parse(socialFeeds)
    
-    let index = 0
-    while( index < twitterFeedJson.length ) {
+    //  console.log(_.size(socialFeeds))
+
+    for (let socialFeed in socialFeeds) {        
+       
+        console.log(socialFeed[0].table)
+    }
+/*    let index = 0
+    while( index < twitterFeeds.toJSON().length ) {
  
       let feed = twitterFeedJson[index].feed    
 
@@ -43,28 +53,14 @@ class PageController {
           yield sentiment("text", feed, {})      
       } 
       catch(res) {
-//        console.log(res.docSentiment)
-//        console.log(twitterFeed.value())
-//        console.log(_.size(twitterFeed.value()))
-        const feedValue = twitterFeedValue[index].attributes
-
-        console.log(feedValue)
-
-//        feedValue.fill({analysis : JSON.stringify(res.docSentiment)})
-//        yield feedValue.save()
-
-//      yield twitterUser.feed().save(twitterFeedJson[index])
-         
-
-/*      yield Database.table('twitter_feed')
-          .where('id', twitterFeedJson[index].id)
-          .update('analysis', JSON.stringify(res.docSentiment))*/
-            
+          yield Database.table('twitter_feed')
+              .where('id', twitterFeedJson[index].id)
+              .update('analysis', JSON.stringify(res.docSentiment))            
       }
-
       index++
-    }
-   return response.send('ok')    
+
+    }*/
+    return response.send('ok')    
 
   }
 

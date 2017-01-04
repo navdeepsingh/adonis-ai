@@ -20,6 +20,7 @@
     "adonis-lucid": "^3.0.9",
     "adonis-middleware": "^1.0.8",
     "alchemy-api-nav": "^2.0.0",
+    "bluebird": "^3.4.7",
     "bootstrap": "^3.3.7",
     "chart.js": "^2.4.0",
     "es6-promisify": "^5.0.0",
@@ -43,8 +44,11 @@
     "App": "./app"
   },
   "devDependencies": {
+    "babel-preset-env": "^1.1.4",
     "grunt": "^1.0.1",
+    "grunt-babel": "^6.0.0",
     "grunt-contrib-copy": "^1.0.0",
+    "load-grunt-tasks": "^3.5.2",
     "nodemon": "^1.11.0",
     "standard": "^8.3.0",
     "vue-charts": "^0.2.1"

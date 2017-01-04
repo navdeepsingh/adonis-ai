@@ -1,7 +1,19 @@
 module.exports = function(grunt) {
 
+require("load-grunt-tasks")(grunt);
+
   // Project configuration.
   grunt.initConfig({
+    "babel": {
+         options: {
+            sourceMap: true
+       },
+       dist: {
+            files: {
+            "js/main.js": "js/main.js"
+         }
+       }
+    },
     copy: {
         js: {
             expand: true,
@@ -26,6 +38,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   // Default task(s).
-  grunt.registerTask('default', ['copy']);
+  grunt.registerTask('default', ['babel', 'copy']);
 
 };

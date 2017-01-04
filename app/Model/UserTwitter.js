@@ -8,7 +8,7 @@ class UserTwitter extends Lucid {
     return 'users_twitter'
   }
 
-  feed () {
+  feeds (){
     return this.hasMany('App/Model/TwitterFeed', 'id', 'user_id')
   }
 }
