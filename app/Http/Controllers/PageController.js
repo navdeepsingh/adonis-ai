@@ -5,8 +5,7 @@ const UserTwitter = use('App/Model/UserTwitter')
 const UserFacebook = use('App/Model/UserFacebook')
 const Database = use('Database')
 const promisify = require("es6-promisify")
-const _ = require("lodash")
-const Promise = require("bluebird");
+const moment = use('moment');
 
 
 class PageController {
@@ -31,35 +30,30 @@ class PageController {
 
     const sentiment = promisify( alchemyapi.sentiment.bind( alchemyapi ))   
 
-//    const socialFeeds = "{'twitter' :  {'table' : 'twitter_feed', 'data' : twitterFeeds}, 'facebook': {'table' : 'facebook_feed','data' : facebookFeeds}}"
+    const socialFeeds = {"twitter": {"table": "twitter_feed","data": twitterFeeds}, "facebook" : {"table": "facebook_feed", "data" : facebookFeeds}}
 
 
-    let socialFeeds = '{"twitter": [{"table": "twitter_feed","data": "twitterFeeds"}]}'
-   socialFeeds = JSON.parse(socialFeeds)
-   
-    //  console.log(_.size(socialFeeds))
-
-    for (let socialFeed in socialFeeds) {        
-       
-        console.log(socialFeed[0].table)
-    }
-/*    let index = 0
-    while( index < twitterFeeds.toJSON().length ) {
+    for (let key in socialFeeds) {        
+         if (socialFeeds.hasOwnProperty(key)) {
+            console.log(socialFeeds[key].table)
+            let index = 0
+            let feedJson = socialFeeds[key].data.toJSON()
+            while( index < feedJson.length ) {
  
-      let feed = twitterFeedJson[index].feed    
+              let feed = feedJson[index].feed    
 
-      const sentiment = promisify( alchemyapi.sentiment.bind( alchemyapi ))
-      try {
-          yield sentiment("text", feed, {})      
-      } 
-      catch(res) {
-          yield Database.table('twitter_feed')
-              .where('id', twitterFeedJson[index].id)
-              .update('analysis', JSON.stringify(res.docSentiment))            
-      }
-      index++
-
-    }*/
+              try {
+                  yield sentiment("text", feed, {})      
+              } 
+              catch(res) {
+                  yield Database.table(socialFeeds[key].table)
+                  .where('id', feedJson[index].id)
+                  .update({'analysis' :  JSON.stringify(res.docSentiment), updated_at : moment().format('YYYY-MM-DD hh:mm:ss')})            
+              }
+              index++
+            }                
+         }     
+    }
     return response.send('ok')    
 
   }
