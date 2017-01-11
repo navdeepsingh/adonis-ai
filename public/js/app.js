@@ -206,52 +206,82 @@ new Vue({
 
   mounted : function() {
     this.fetchStatus()
+    that = this
     $('#myModal').on('shown.bs.modal',function(event){
        console.log('displayed modal')
        var modal = $(this);
        var canvas = modal.find('.modal-body canvas');
 //    modal.find('.modal-title').html(title);
        var ctx = canvas[0].getContext("2d");    
+       let analysisData = []
+       let labelsData = []
+       let negativeData = []
+       let positiveData = []
+       let neutralData = []
+       that.$http.get('/results').then((response) => {
+            const results = response.body            
+            let index = 1
+            for (let feed in results) {
+                let analysis = JSON.parse(results[feed].analysis)
+                if (analysis != null) {
+                    if (analysis.type == 'neutral') {
+                        analysisData.push(0)
+                    } else {
+                        analysisData.push(analysis.score)
+                    }
+
+                    if (analysis.score < 0) {
+                        negativeData.push(analysis.score)                        
+                    } else if (analysis.score > 0) {
+                        positiveData.push(analysis.score)                        
+                    } else {
+                        neutralData.push(analysis.score)
+                    }
+
+                    labelsData.push(index)
+                    index++
+                }
+            }        
+
+       labelsData = labelsData.slice(0, Math.max(positiveData.length, negativeData.length) )
+        console.log(labelsData)
+
        var myChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
-                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                labels: labelsData,
                 datasets: [{
-                    label: '# of Votes',    
-                    data: [0.33, 0.66, 0.91, 0.11, 0.22, 0.44],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                        ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                        ],
-                     borderWidth: 1
-                }]
+                 label: 'Negative Tweets',           
+                 data: negativeData,
+                 backgroundColor: "rgba(31,119,190,1)"
+               }, {
+                 label: 'Positive Tweets',
+                 data : positiveData,
+                 backgroundColor: "rgba(44,160,44,1)"                                    
+               }]
             },
-                options: {
-                     scales: {
-                         yAxes: [{
+            options: {               
+                  scales: {
+                      yAxes: [{
                              ticks: {
                                 beginAtZero:true
                              }        
                          }]
-                     },
-                     title: {
+                  },
+                 title: {
                          display: true,
-                         text: 'Custom Chart Title'
-                     }
-                }
+                         text: 'Twitter Sentiment'
+                 }
+              }
         });
+
+        
+
+       }).catch((error) => {
+            this.statusAnalyzing = `Error : ${error}`
+            console.log(error)
+       });
+     
     })
   },
 

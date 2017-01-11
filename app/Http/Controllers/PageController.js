@@ -58,6 +58,25 @@ class PageController {
 
   }
 
+  * results (request, response) {
+    
+    const twitterAccessToken = yield request.session.get('twitterAccessToken')
+    const twitterUser = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
+  
+    const facebookAccessToken = yield request.session.get('facebookAccessToken')
+    const facebookUser = yield UserFacebook.findBy( 'access_token', facebookAccessToken )
+
+    const twitterFeeds =  yield twitterUser.feeds().fetch()
+    const facebookFeeds = yield facebookUser.feeds().fetch()
+
+    const resultFeeds = twitterFeeds.map((feed) => {
+        return feed
+    })
+
+    return response.send(resultFeeds)
+
+  }
+
   * fetchStatus (request, response) {
 
     const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )

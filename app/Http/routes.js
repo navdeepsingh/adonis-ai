@@ -20,6 +20,7 @@ const Route = use('Route')
 Route.get('/', 'PageController.index')
 Route.get('/fetch/status', 'PageController.fetchStatus')
 Route.get('/analyze', 'PageController.analyze')
+Route.get('/results', 'PageController.results')
 
 Route.group('socialAuth', function () {
   Route.get('/connect/twitter', 'TwitterController.connect')
