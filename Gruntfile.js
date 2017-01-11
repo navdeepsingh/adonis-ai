@@ -4,16 +4,6 @@ require("load-grunt-tasks")(grunt);
 
   // Project configuration.
   grunt.initConfig({
-    "babel": {
-         options: {
-            sourceMap: true
-       },
-       dist: {
-            files: {
-            "js/main.js": "js/main.js"
-         }
-       }
-    },
     copy: {
         js: {
             expand: true,
@@ -22,7 +12,7 @@ require("load-grunt-tasks")(grunt);
             flatten: true,
             filter: 'isFile',
             src: [
-                './jquery/dist/js/jquery.min.js',
+                './jquery/dist/jquery.min.js',
                 './bootstrap/dist/js/bootstrap.min.js',
                 './vue/dist/vue.min.js',
                 './vue-resource/dist/vue-resource.min.js',
@@ -38,6 +28,6 @@ require("load-grunt-tasks")(grunt);
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   // Default task(s).
-  grunt.registerTask('default', ['babel', 'copy']);
+  grunt.registerTask('default', ['copy']);
 
 };

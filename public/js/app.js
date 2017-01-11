@@ -208,34 +208,42 @@ new Vue({
     this.fetchStatus()
     that = this
     $('#myModal').on('shown.bs.modal',function(event){
-       console.log('displayed modal')
        var modal = $(this);
        var canvas = modal.find('.modal-body canvas');
-//    modal.find('.modal-title').html(title);
-       var ctx = canvas[0].getContext("2d");    
        let analysisData = []
        let labelsData = []
        let negativeData = []
        let positiveData = []
-       let neutralData = []
+       let socialResults, ctx, labelNegative, labelPositive, labelChart
+
        that.$http.get('/results').then((response) => {
-            const results = response.body            
+           const results = response.body            
+    //       console.log(results)
+           for(let social in results) {
+            if ( social == 'twitter' ) {
+                socialResults = results.twitter
+                ctx = canvas[0].getContext("2d")    
+                labelNegative = 'Negative Tweets'       
+                labelPositive = 'Positive Tweets'                     
+                labelChart = 'Twitter Sentiment'
+            } else if (social == 'facebook') {
+                socialResults = results.facebook
+                ctx = canvas[1].getContext("2d")    
+                labelNegative = 'Negative Posts'       
+                labelPositive = 'Positive Posts'                     
+                labelChart = 'Facebook Sentiment'                
+            }
+          
             let index = 1
-            for (let feed in results) {
-                let analysis = JSON.parse(results[feed].analysis)
+
+            for (let feed in socialResults) {
+                let analysis = JSON.parse(socialResults[feed].analysis)
                 if (analysis != null) {
-                    if (analysis.type == 'neutral') {
-                        analysisData.push(0)
-                    } else {
-                        analysisData.push(analysis.score)
-                    }
 
                     if (analysis.score < 0) {
                         negativeData.push(analysis.score)                        
                     } else if (analysis.score > 0) {
                         positiveData.push(analysis.score)                        
-                    } else {
-                        neutralData.push(analysis.score)
                     }
 
                     labelsData.push(index)
@@ -243,19 +251,21 @@ new Vue({
                 }
             }        
 
-       labelsData = labelsData.slice(0, Math.max(positiveData.length, negativeData.length) )
-        console.log(labelsData)
+           labelsData = labelsData.slice(0, Math.max(positiveData.length, negativeData.length) )
 
-       var myChart = new Chart(ctx, {
+           console.log(positiveData) 
+           console.log(negativeData) 
+
+           var myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labelsData,
                 datasets: [{
-                 label: 'Negative Tweets',           
+                 label: labelNegative,           
                  data: negativeData,
                  backgroundColor: "rgba(31,119,190,1)"
                }, {
-                 label: 'Positive Tweets',
+                 label: labelPositive,
                  data : positiveData,
                  backgroundColor: "rgba(44,160,44,1)"                                    
                }]
@@ -270,13 +280,14 @@ new Vue({
                   },
                  title: {
                          display: true,
-                         text: 'Twitter Sentiment'
+                         text: labelChart
                  }
               }
-        });
-
-        
-
+             })                  
+             negativeData = []
+             positiveData = []
+             labelsData = []
+           } 
        }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)

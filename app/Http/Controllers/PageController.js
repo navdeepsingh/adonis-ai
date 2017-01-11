@@ -69,11 +69,16 @@ class PageController {
     const twitterFeeds =  yield twitterUser.feeds().fetch()
     const facebookFeeds = yield facebookUser.feeds().fetch()
 
-    const resultFeeds = twitterFeeds.map((feed) => {
+    const resultTwitterFeeds = twitterFeeds.map((feed) => {
         return feed
     })
 
-    return response.send(resultFeeds)
+    const resultFacebookFeeds = facebookFeeds.map((feed) => {
+        return feed
+    })
+
+
+    return response.json({'twitter' : resultTwitterFeeds, 'facebook' : resultFacebookFeeds})
 
   }
 
