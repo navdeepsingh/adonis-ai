@@ -1,10 +1,11 @@
+/*jshint esversion: 6 */
 // register modal component
 Vue.component('modal', {
    template: '#bs-modal',
    data: function () {
       console.log("### DATA");
    },
-})
+});
 
 new Vue({
   el: '#app',
@@ -21,34 +22,7 @@ new Vue({
     showStep2 : false,
     showStep3 : false,
     showResultsLink : true,
-    showModal: false,
-    function() {
-        return {
-            columns : [{
-                'type' : 'string',
-                'label': 'Year'
-            }],
-            rows : [
-                ['2004', 1000, 400],
-                ['2005', 1170, 460]
-            ],
-            options: {
-                title: 'Company Performance',
-                hAxis: {
-                    title: 'Year',
-                    minValue: '2004',
-                    maxValue: '2007'
-                },
-                vAxis: {
-                    title: '',
-                    minValue: 300,
-                    maxValue: 1200
-                },
-                // not setting fixed width
-                height: 500
-            }
-        }
-    }
+    showModal: false
   },
 
   methods: {
@@ -97,8 +71,7 @@ new Vue({
               id : uid,
               name : response.name
             }).then((data, status, request) => {
-//              console.log(data)
-		that.fetchStatus()              
+        		that.fetchStatus()              
             }, (response) => {
               this.statusPulling = 'Error'
             });
@@ -165,7 +138,7 @@ new Vue({
             const result = response.body            
             console.log(result)
             if (result == 'ok') {
-                this.showResultsLink = true
+                this.completeAnalyzing = true
                 this.statusAnalyzing = result
             }          
         }).catch((error) => {
@@ -189,14 +162,16 @@ new Vue({
           this.connectedFacebook = response.body.connectedFacebook
           this.pulledTwitter = response.body.pulledTwitter
           this.pulledFacebook = response.body.pulledFacebook
+          this.completeAnalyzing = response.body.completeAnalyzing
           this.statusLinking = ''
           this.statusPulling = ''
-    	  if ( this.connectedTwitter == true && this.connectedFacebook == true ) {
+          this.statusAnalyzing = ''            
+    	  if ( this.connectedTwitter === true && this.connectedFacebook === true ) {
         	this.showStep2 = true
     	  }
-          if ( this.pulledTwitter == true && this.pulledFacebook == true ) {
+          if ( this.pulledTwitter === true && this.pulledFacebook === true ) {
             this.showStep3 = true
-          }
+          }          
         })
         .catch((error) => {
           console.log(error)

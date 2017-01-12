@@ -54,6 +54,7 @@ class PageController {
             }                
          }     
     }
+    yield request.session.put('analyzingComplete', 'ok')
     return response.send('ok')    
 
   }
@@ -93,6 +94,8 @@ class PageController {
     const twitterPulled = yield request.session.get( 'twitterPulled' )
     const facebookPulled = yield request.session.get( 'facebookPulled' )
 
+    const analyzingComplete = yield request.session.get( 'analyzingComplete' )
+
     let socialStatus = {}
 
     if (twitterUser !== null && facebookUser !== null) {
@@ -121,6 +124,12 @@ class PageController {
       socialStatus.pulledFacebook = false
     } else {
       socialStatus.pulledFacebook = true
+    }
+
+    socialStatus.completeAnalyzing = false
+
+    if (analyzingComplete == 'ok') {
+      socialStatus.completeAnalyzing = true
     }
 
     response.send(socialStatus)
