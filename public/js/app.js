@@ -108,7 +108,6 @@ new Vue({
         console.log(response.status)
         if ( response.status === 'connected' ) {
 
-          var uid = response.authResponse.userID;
           var accessToken = response.authResponse.accessToken;
 
           FB.api('/me/feed', {access_token : accessToken}, function(response) {
@@ -149,9 +148,6 @@ new Vue({
 
     showResults: function() {
         console.log('Modal will be displayed')
-//        this.showModal = true
-//        const myModal = document.getElementById('myModal')
-//        myModal.modal('show')
     },
 
     fetchStatus: function () {
