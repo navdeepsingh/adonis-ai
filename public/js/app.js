@@ -69,7 +69,6 @@ new Vue({
               id : uid,
               name : response.name
             }).then((data, status, request) => {
-//                console.log(data.body)
                 document.getElementById('facebookFeed').innerHTML = JSON.stringify(data.body)
         		that.fetchStatus()              
             }, (response) => {
@@ -136,7 +135,7 @@ new Vue({
         this.$http.get('/analyze').then((response) => {
             const result = response.body            
             this.completeAnalyzing = true
-           // this.dataAnalyzing = result
+            this.statusAnalyzing = ''   
         }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)
@@ -152,7 +151,6 @@ new Vue({
           this.pulledTwitter = response.body.pulledTwitter
           this.pulledFacebook = response.body.pulledFacebook
           this.completeAnalyzing = response.body.completeAnalyzing
-          this.statusAnalyzing = ''            
     	  if ( this.connectedTwitter === true && this.connectedFacebook === true ) {
         	this.showStep2 = true
             this.statusLinking = ''
@@ -161,6 +159,9 @@ new Vue({
             this.showStep3 = true
             this.statusPulling = ''
           }          
+          if ( this.completeAnalyzing == true ) {
+            this.statusAnalyzing = ''            
+          }
         })
         .catch((error) => {
           console.log(error)
@@ -182,8 +183,8 @@ new Vue({
 
        that.$http.get('/results').then((response) => {
            const results = response.body            
-    //       console.log(results)
-           that.dataAnalyzing = results       
+           console.log(JSON.stringify(results, undefined, 2))
+           that.dataAnalyzing = results
            for(let social in results) {
             if ( social == 'twitter' ) {
                 socialResults = results.twitter
