@@ -20,7 +20,8 @@
               {% endraw %}
               <hr>
               {{ twitterFeed | json }}
-              {{ facebookFeed | json }}
+              <hr>
+              <div id="facebookFeed">{{ facebookFeed | json }}</div>
           </div>
         </div>
 
@@ -54,6 +55,8 @@
               </p>
               {% raw %}
               <div v-html="statusAnalyzing"></div>
+                <hr>
+              {{ dataAnalyzing | json }}
               {% endraw %}
 
               <modal></modal>

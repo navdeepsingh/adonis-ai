@@ -1,10 +1,7 @@
 /*jshint esversion: 6 */
 // register modal component
 Vue.component('modal', {
-   template: '#bs-modal',
-   data: function () {
-      console.log("### DATA");
-   },
+   template: '#bs-modal'
 });
 
 new Vue({
@@ -22,7 +19,8 @@ new Vue({
     showStep2 : false,
     showStep3 : false,
     showResultsLink : true,
-    showModal: false
+    showModal: false,
+    dataAnalyzing : ''
   },
 
   methods: {
@@ -71,6 +69,8 @@ new Vue({
               id : uid,
               name : response.name
             }).then((data, status, request) => {
+//                console.log(data.body)
+                document.getElementById('facebookFeed').innerHTML = JSON.stringify(data.body)
         		that.fetchStatus()              
             }, (response) => {
               this.statusPulling = 'Error'
@@ -135,19 +135,12 @@ new Vue({
         this.statusAnalyzing = 'Analyzing..'
         this.$http.get('/analyze').then((response) => {
             const result = response.body            
-            console.log(result)
-            if (result == 'ok') {
-                this.completeAnalyzing = true
-                this.statusAnalyzing = result
-            }          
+            this.completeAnalyzing = true
+           // this.dataAnalyzing = result
         }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)
         });       
-    },
-
-    showResults: function() {
-        console.log('Modal will be displayed')
     },
 
     fetchStatus: function () {
@@ -159,14 +152,14 @@ new Vue({
           this.pulledTwitter = response.body.pulledTwitter
           this.pulledFacebook = response.body.pulledFacebook
           this.completeAnalyzing = response.body.completeAnalyzing
-          this.statusLinking = ''
-          this.statusPulling = ''
           this.statusAnalyzing = ''            
     	  if ( this.connectedTwitter === true && this.connectedFacebook === true ) {
         	this.showStep2 = true
+            this.statusLinking = ''
     	  }
           if ( this.pulledTwitter === true && this.pulledFacebook === true ) {
             this.showStep3 = true
+            this.statusPulling = ''
           }          
         })
         .catch((error) => {
@@ -190,6 +183,7 @@ new Vue({
        that.$http.get('/results').then((response) => {
            const results = response.body            
     //       console.log(results)
+           that.dataAnalyzing = results       
            for(let social in results) {
             if ( social == 'twitter' ) {
                 socialResults = results.twitter

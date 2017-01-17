@@ -12,9 +12,12 @@ class PageController {
   * index (request, response) {
 
     const twitterAccessToken = yield request.session.get( 'twitterAccessToken' )
-    const user = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
+    const twitterUser = yield UserTwitter.findBy( 'access_token', twitterAccessToken )
 
-    yield response.sendView( 'welcome', {twitterFeed : user} )
+    const facebookAccessToken = yield request.session.get('facebookAccessToken')
+    const facebookUser = yield UserFacebook.findBy( 'access_token', facebookAccessToken )
+
+    yield response.sendView( 'welcome', {twitterFeed : twitterUser, facebookFeed : facebookUser} )
   }
 
   * analyze (request, response) { 

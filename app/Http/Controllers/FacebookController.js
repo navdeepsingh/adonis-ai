@@ -23,7 +23,7 @@ class FacebookController {
 
     yield user.save()
 
-    response.ok()
+    response.send(user.toJSON())
   }
 
   * saveFeed (request, response) {

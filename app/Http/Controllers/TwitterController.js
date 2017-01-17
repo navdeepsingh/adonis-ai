@@ -55,10 +55,8 @@ class TwitterController {
     user.screen_name = result[2].screen_name
     user.access_token = result[0]
     user.access_token_secret = result[1]
-
     yield user.save()
     yield request.session.put('twitterAccessToken', user.access_token)
-    console.log(user.access_token)
 
     response.redirect('/')
   }
