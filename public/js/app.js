@@ -199,13 +199,16 @@ new Vue({
       function getBody(bodyItem) {
         return bodyItem.lines;
       }
+
       // Set Text
-      if (tooltip.body) {
+      if (tooltip.body) 
+      {
+          console.log(tooltip.body)
         var titleLines = tooltip.title || [];
         var bodyLines = tooltip.body.map(getBody);
         var innerHtml = '<thead>';
         titleLines.forEach(function(title) {
-          innerHtml += '<tr><th>' + title + '</th></tr>';
+          innerHtml += '<tr><th>' + title + ' - test</th></tr>';
         });
         innerHtml += '</thead><tbody>';
         bodyLines.forEach(function(body, i) {
@@ -239,7 +242,11 @@ new Vue({
        let labelsData = []
        let negativeData = []
        let positiveData = []
-       let socialResults, ctx, labelNegative, labelPositive, labelChart
+       let tooltipTwNvData = []
+       let tooltipTwPvData = []
+       let tooltipFbNvData = []
+       let tooltipFbPvData = []
+        let socialResults, ctx, labelNegative, labelPositive, labelChart
 
        that.$http.get('/results').then((response) => {
            const results = response.body
@@ -257,7 +264,7 @@ new Vue({
                 ctx = canvas[1].getContext("2d")
                 labelNegative = 'Negative Posts'
                 labelPositive = 'Positive Posts'
-                labelChart = 'Facebook Sentiment'
+                labelChart = 'Facebook Sentiment'              
             }
 
             let index = 1
@@ -273,14 +280,24 @@ new Vue({
                     }
 
                     labelsData.push(index)
+                    if ( social == 'twitter' ) {
+                        if (analysis.score < 0){
+                            tooltipTwNvData.push(socialResults[feed].feed)   
+                        } else if ( analysis.score > 0) {
+                            tooltipTwPvData.push(socialResults[feed].feed)
+                        }                       
+                    } else {
+                        if (analysis.score < 0){
+                            tooltipFbNvData.push(socialResults[feed].feed)   
+                        } else if ( analysis.score > 0) {
+                            tooltipFbPvData.push(socialResults[feed].feed)
+                        }                           
+                    }
                     index++
                 }
             }
 
            labelsData = labelsData.slice(0, Math.max(positiveData.length, negativeData.length) )
-
-           console.log(positiveData)
-           console.log(negativeData)
 
            var myChart = new Chart(ctx, {
             type: 'line',
@@ -309,10 +326,25 @@ new Vue({
                     text: labelChart
                  },
                  tooltips : {
-                     enabled : false,
-                     mode : 'index',
-                     position : 'nearest',
-                     custom: customTooltips
+                     enabled: true,
+                     mode : 'single',
+                      callbacks: {
+                          title: function (tooltipItem, data) { 
+                              var indice = tooltipItem[0].index
+                              var yLabel = tooltipItem[0].yLabel
+                              if (social == 'twitter') {
+                                if (yLabel < 0)
+                                  return tooltipTwNvData[indice]
+                                else if (yLabel > 0)
+                                  return tooltipTwPvData[indice]                
+                              } else {
+                                if (yLabel < 0)
+                                  return tooltipFbNvData[indice]
+                                else if (yLabel > 0)
+                                  return tooltipFbPvData[indice]                                                 
+                              }
+                          }
+                      }                     
                  },
                  animation:{
                      animateScale:true
@@ -322,6 +354,7 @@ new Vue({
          negativeData = []
          positiveData = []
          labelsData = []
+         tooltipData = []
          }
        }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
