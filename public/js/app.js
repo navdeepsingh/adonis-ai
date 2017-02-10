@@ -237,23 +237,32 @@ new Vue({
                }]
             },
             options: {               
-                  scales: {
-                      yAxes: [{
-                             ticks: {
-                                beginAtZero:true
-                             }        
-                         }]
-                  },
+                 scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }        
+                    }]
+                 },
                  title: {
-                         display: true,
-                         text: labelChart
+                    display: true,
+                    text: labelChart
+                 },
+                 tooltips : {
+                     enabled : false,
+                     mode : 'index',
+                     position : 'nearest',
+                     custom: customTooltips
+                 },
+                 animation:{
+                     animateScale:true
                  }
-              }
-             })                  
-             negativeData = []
-             positiveData = []
-             labelsData = []
-           } 
+            }
+         })                  
+         negativeData = []
+         positiveData = []
+         labelsData = []
+         } 
        }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)
