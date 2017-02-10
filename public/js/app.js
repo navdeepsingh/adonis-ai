@@ -70,7 +70,7 @@ new Vue({
               name : response.name
             }).then((data, status, request) => {
                 document.getElementById('facebookFeed').innerHTML = JSON.stringify(data.body)
-        		that.fetchStatus()              
+        		that.fetchStatus()
             }, (response) => {
               this.statusPulling = 'Error'
             });
@@ -119,7 +119,7 @@ new Vue({
   		      }).then((data, status, request) => {
 			    that.fetchStatus()
 		      }, (response) => {
-			
+
 		      })
             }
           });
@@ -133,13 +133,13 @@ new Vue({
         console.log('Start API here')
         this.statusAnalyzing = 'Analyzing..'
         this.$http.get('/analyze').then((response) => {
-            const result = response.body            
+            const result = response.body
             this.completeAnalyzing = true
-            this.statusAnalyzing = ''   
+            this.statusAnalyzing = ''
         }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)
-        });       
+        });
     },
 
     fetchStatus: function () {
@@ -158,9 +158,9 @@ new Vue({
           if ( this.pulledTwitter === true && this.pulledFacebook === true ) {
             this.showStep3 = true
             this.statusPulling = ''
-          }          
+          }
           if ( this.completeAnalyzing == true ) {
-            this.statusAnalyzing = ''            
+            this.statusAnalyzing = ''
           }
         })
         .catch((error) => {
@@ -172,6 +172,66 @@ new Vue({
   mounted : function() {
     this.fetchStatus()
     that = this
+
+    Chart.defaults.global.pointHitDetectionRadius = 1;
+
+    var customTooltips = function(tooltip) {
+      // Tooltip Element
+      var tooltipEl = document.getElementById('chartjs-tooltip');
+      if (!tooltipEl) {
+        tooltipEl = document.createElement('div');
+        tooltipEl.id = 'chartjs-tooltip';
+        tooltipEl.innerHTML = "<table></table>"
+        document.body.appendChild(tooltipEl);
+      }
+      // Hide if no tooltip
+      if (tooltip.opacity === 0) {
+        tooltipEl.style.opacity = 0;
+        return;
+      }
+      // Set caret Position
+      tooltipEl.classList.remove('above', 'below', 'no-transform');
+      if (tooltip.yAlign) {
+        tooltipEl.classList.add(tooltip.yAlign);
+      } else {
+        tooltipEl.classList.add('no-transform');
+      }
+      function getBody(bodyItem) {
+        return bodyItem.lines;
+      }
+      // Set Text
+      if (tooltip.body) {
+        var titleLines = tooltip.title || [];
+        var bodyLines = tooltip.body.map(getBody);
+        var innerHtml = '<thead>';
+        titleLines.forEach(function(title) {
+          innerHtml += '<tr><th>' + title + '</th></tr>';
+        });
+        innerHtml += '</thead><tbody>';
+        bodyLines.forEach(function(body, i) {
+          var colors = tooltip.labelColors[i];
+          var style = 'background:' + colors.backgroundColor;
+          style += '; border-color:' + colors.borderColor;
+          style += '; border-width: 2px';
+          var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+          innerHtml += '<tr><td>' + span + body + '</td></tr>';
+        });
+        innerHtml += '</tbody>';
+        var tableRoot = tooltipEl.querySelector('table');
+        tableRoot.innerHTML = innerHtml;
+      }
+      var position = this._chart.canvas.getBoundingClientRect();
+      // Display, position, and set styles for font
+      tooltipEl.style.opacity = 1;
+      tooltipEl.style.left = position.left + tooltip.caretX + 'px';
+      tooltipEl.style.top = position.top + tooltip.caretY + 'px';
+      tooltipEl.style.fontFamily = tooltip._fontFamily;
+      tooltipEl.style.fontSize = tooltip.fontSize;
+      tooltipEl.style.fontStyle = tooltip._fontStyle;
+      tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    }
+
+
     $('#myModal').on('shown.bs.modal',function(event){
        var modal = $(this);
        var canvas = modal.find('.modal-body canvas');
@@ -182,24 +242,24 @@ new Vue({
        let socialResults, ctx, labelNegative, labelPositive, labelChart
 
        that.$http.get('/results').then((response) => {
-           const results = response.body            
+           const results = response.body
            console.log(JSON.stringify(results, undefined, 2))
            that.dataAnalyzing = results
            for(let social in results) {
             if ( social == 'twitter' ) {
                 socialResults = results.twitter
-                ctx = canvas[0].getContext("2d")    
-                labelNegative = 'Negative Tweets'       
-                labelPositive = 'Positive Tweets'                     
+                ctx = canvas[0].getContext("2d")
+                labelNegative = 'Negative Tweets'
+                labelPositive = 'Positive Tweets'
                 labelChart = 'Twitter Sentiment'
             } else if (social == 'facebook') {
                 socialResults = results.facebook
-                ctx = canvas[1].getContext("2d")    
-                labelNegative = 'Negative Posts'       
-                labelPositive = 'Positive Posts'                     
-                labelChart = 'Facebook Sentiment'                
+                ctx = canvas[1].getContext("2d")
+                labelNegative = 'Negative Posts'
+                labelPositive = 'Positive Posts'
+                labelChart = 'Facebook Sentiment'
             }
-          
+
             let index = 1
 
             for (let feed in socialResults) {
@@ -207,41 +267,41 @@ new Vue({
                 if (analysis != null) {
 
                     if (analysis.score < 0) {
-                        negativeData.push(analysis.score)                        
+                        negativeData.push(analysis.score)
                     } else if (analysis.score > 0) {
-                        positiveData.push(analysis.score)                        
+                        positiveData.push(analysis.score)
                     }
 
                     labelsData.push(index)
                     index++
                 }
-            }        
+            }
 
            labelsData = labelsData.slice(0, Math.max(positiveData.length, negativeData.length) )
 
-           console.log(positiveData) 
-           console.log(negativeData) 
+           console.log(positiveData)
+           console.log(negativeData)
 
            var myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labelsData,
                 datasets: [{
-                 label: labelNegative,           
+                 label: labelNegative,
                  data: negativeData,
                  backgroundColor: "rgba(31,119,190,1)"
                }, {
                  label: labelPositive,
                  data : positiveData,
-                 backgroundColor: "rgba(44,160,44,1)"                                    
+                 backgroundColor: "rgba(44,160,44,1)"
                }]
             },
-            options: {               
+            options: {
                  scales: {
                     yAxes: [{
                         ticks: {
                             beginAtZero:true
-                        }        
+                        }
                     }]
                  },
                  title: {
@@ -258,16 +318,16 @@ new Vue({
                      animateScale:true
                  }
             }
-         })                  
+         })
          negativeData = []
          positiveData = []
          labelsData = []
-         } 
+         }
        }).catch((error) => {
             this.statusAnalyzing = `Error : ${error}`
             console.log(error)
        });
-     
+
     })
   },
 
