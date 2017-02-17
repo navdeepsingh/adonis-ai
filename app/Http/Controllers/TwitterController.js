@@ -19,7 +19,7 @@ class TwitterController {
 
     const getToken = promisify( twitter.getRequestToken.bind( twitter ), {multiArgs: true} )
     const result = yield getToken()
-    response.send(`/api/handle/twitter?c1=${result[0]}&c2=${result[1]}`)
+    response.send(`http://${request.hostname()}:${process.env.PORT}/api/handle/twitter?c1=${result[0]}&c2=${result[1]}`)
 
   }
 
