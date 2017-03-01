@@ -29,6 +29,7 @@
     "mysql": "^2.12.0",
     "node-twitter-api": "^1.8.0",
     "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
     "promise": "^7.1.1",
     "standard": "^8.4.0",
     "vue": "^2.0.3",

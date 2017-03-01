@@ -58,7 +58,16 @@ class TwitterController {
     yield user.save()
     yield request.session.put('twitterAccessToken', user.access_token)
 
-    response.redirect('/')
+    if (typeof(Storage) !== "undefined") {
+      console.log('Code for localStorage/sessionStorage.')
+    } else {
+        console.log('Sorry! No Web Storage support..')
+    }
+
+    //localStorage.setItem('twitterAccessToken', user.access_token)
+    response.send(user.toJSON())
+
+    //response.redirect(`http://${request.hostname()}:${process.env.FRONT_PORT}/`)
   }
 
   * pullFeed (request, response) {
